@@ -20,6 +20,8 @@ A modular automation pipeline designed to identify MP3 files, fetch synchronized
     `pip install pandas openpyxl`
 
 3. Prepare Your Files
+    For maximum results I suggest you to clean your MP3 files, make sure the title and artist name doesn't contain any unwanted symbols. Youc can use a tool named MusicBee for it.
+    
     Place your MP3 files in the following directory:
     Files/MP3_files/
 
