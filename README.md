@@ -1,15 +1,15 @@
 
 # MusicSync-Pipeline 🎵
 
-A modular, high-performance automation pipeline designed to identify MP3 files, fetch synchronized lyrics, and embed them directly into audio metadata.
+A modular automation pipeline designed to identify MP3 files, fetch synchronized lyrics, and embed them directly into audio metadata.
 
 ## 🚀 The Pipeline Logic
 The system is divided into four distinct phases to ensure data integrity and bypass API limitations:
 
-1. Metadata Extraction (Node.js)
+### 1. Metadata Extraction (Node.js)
 The script scans a local directory and uses music-metadata to extract internal ID3 tags (Title, Artist, Duration). This ensures the lyrics search is based on actual file data rather than potentially messy filenames.
 
-2. Batch Lyrics Fetching (Node.js)
+### 2. Batch Lyrics Fetching (Node.js)
 To optimize speed while respecting API rate limits, the system uses a Batch-Concurrent approach:
 
 Concurrency: Uses Promise.all to process 5 songs simultaneously.
@@ -18,14 +18,14 @@ Throttling: Implements a custom sleep() function between batches to avoid IP ban
 
 Failure Handling: Any song that triggers an API Error or returns an empty response is automatically pushed to a Retry.json file for later processing.
 
-3. Data Visualization & Reporting (Python)
+### 3. Data Visualization & Reporting (Python)
 A dedicated Python script processes the resulting lyrics_data.json:
 
 Excel Integration: Converts raw JSON into a formatted Dataset.xlsx.
 
 Styling: Uses openpyxl to color-code statuses (e.g., Green for Synced, Yellow for Plain) for a quick "at-a-glance" audit of the library.
 
-4. ID3 Embedding (Node.js)
+### 4. ID3 Embedding (Node.js)
 The final step closes the loop. It reads the fetched .lrc files and injects them into the MP3's unsynchronisedLyrics frame using node-id3. This makes the lyrics permanent and viewable on mobile music players (PowerAmp, Samsung Music, etc.).
 
 ## 🛠️ Project Structure
@@ -44,18 +44,61 @@ The Node.js data is passed to a Python script. Python applies conditional format
 Phase 3: Embedding
 The Embedder module reads the verified .lrc files and injects them into the MP3's unsynchronisedLyrics ID3 frame. This makes the lyrics "portable" for any mobile music player.
 
-## 🛠Usage
+## How to Use?
 
-Store the mp3 files in a folder named **"MP3_Files"** in a folder like **"C:\Users\Admin\Music\Test"**
+### 🚀 Quick Start
+1. Clone the Repository
 
-Run the final_fast() function in the Runner.js script then run the dataset.py script
-For the remaining files run Repeat() function in the Runner.js script multiple times but after each run again run the dataset.py only once
+    `git clone https://github.com/your-username/your-repo-name.git`
 
-In the end run the excel_beutify.py script for formatting the Excel document
+2. Install Dependencies
 
-For embedding:
-Run the final_embed() function in the Runner.js script then run the embedded.py script for the excel file.
+    `npm install`
 
+    Python:
+    You will need pandas and openpyxl for data processing and Excel beautification.
+    
+    `pip install pandas openpyxl`
+
+3. Prepare Your Files
+    Place your MP3 files in the following directory:
+    Files/MP3_files/
+
+### 🛠 Using the Pipeline
+To run the pipeline, open Runner.js and uncomment the functions you wish to execute, then run:
+node Runner.js
+
+#### Step 1: startPipeline(batchSize)
+Processes your MP3 files in batches to fetch/generate lyrics.
+
+Recommendation: Use a batch size of 5 to maintain stability.
+
+Action: Uncomment startPipeline(5); in Runner.js.
+
+#### Step 2: repeatPipeline()
+Attempts to retry lyric generation for any files that failed during the initial start.
+
+Recommendation: Run this at least once; you can run it multiple times to maximize success rates.
+
+Action: Uncomment repeatPipeline(); in Runner.js.
+
+#### Step 3: embedPipeline()
+Finalizes the process by embedding the lyrics into the MP3 metadata.
+
+Constraint: Run this only once at the very end.
+
+Action: Uncomment embedPipeline(); in Runner.js.
+
+### 📂 Output & Results
+Once the pipeline finishes, your files are organized into the following structure:
+
+* LRC Lyrics: All generated .lrc files are stored in Files/LRC_files.
+
+* Failed Matches: MP3 files for which no lyrics could be generated are moved to Files/MP3_files/noLRC.
+
+* Documentation: All data logs, datasets, and generated Excel files can be found in Files/Documents.
+
+* Processed MP3s: Your final, embedded files are located in the Files/ directory.
 ## 📦 Dependencies
 Node.js: music-metadata, node-id3, fs-extra
 
