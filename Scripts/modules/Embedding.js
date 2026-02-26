@@ -2,10 +2,15 @@ import NodeID3 from "node-id3";
 import path from "path";
 import fs from "node:fs/promises";
 import { getSongData, Get_musicDir as GetDir } from "./GeneratingLRC.js";
+import {PATHS} from '../utils/paths.js'
 
 export async function embedLyrics(LRCpath, MP3path) {
   //*Getting the text out of LRC file
   const metadata = await getSongData(MP3path);
+
+  if(LRCpath === ''){
+    return { ...metadata, embedded: false };
+  }
 
   let lyrics = "";
   try {
@@ -39,25 +44,32 @@ export async function final_embed(folderPath) {
   const LRCfiles = await GetDir(`${folderPath}/LRC_files`, ".lrc");
   const MP3files = await GetDir(`${folderPath}/MP3_files`, ".mp3");
 
+  console.log(LRCfiles)
   let embeddedDataset = [];
-  for (let i = 0; i < LRCfiles.length; i++) {
-    const MP3path = (
-      path.join(folderPath, "MP3_files", path.basename(LRCfiles[i], ".lrc")) +
-      ".mp3"
+  for (let i = 0; i < MP3files.length; i++) {
+    const LRCpath = (
+      path.join(folderPath, "LRC_files", path.basename(MP3files[i], ".mp3")) +
+      ".lrc"
     )
       .split(path.sep)
       .join(path.posix.sep);
+ 
+    const normalizedSearch = path.normalize(LRCpath);
 
-    if (MP3files.includes(MP3path)) {
-      const obj = await embedLyrics(LRCfiles[i], MP3path);
-      embeddedDataset.push(obj);
+    const exists = LRCfiles.some(p => path.normalize(p) === normalizedSearch);
+    let obj = {};
+    if (exists) {
+      obj = await embedLyrics(LRCpath, MP3files[i]);
+    }else{
+      obj = await embedLyrics('',MP3files[i])
     }
+    embeddedDataset.push(obj);
   }
 
   //?Creating json for the embeddedDataset
   try {
     await fs.writeFile(
-      "./Documents/embedded_data.json",
+      path.join(PATHS.assets ,"embedded_data.json"),
       JSON.stringify(embeddedDataset, null, 2),
     );
     console.log("\nThe dataset JSON file is created!\n");
@@ -66,3 +78,4 @@ export async function final_embed(folderPath) {
     console.log(embeddedDataset);
   }
 }
+

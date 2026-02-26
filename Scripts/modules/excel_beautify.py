@@ -1,8 +1,8 @@
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font
- 
+from utils.paths import PATHS
 
-wb = load_workbook('./Documents/Dataset.xlsx')
+wb = load_workbook(PATHS['documents'] / 'Dataset.xlsx')
 sheet = wb.active
 
 #? Setting widths of the columns 
@@ -43,4 +43,4 @@ for cell in sheet[1][:6]:
     cell.font = Font(size=14, bold=True)
 
 #applying the changes
-wb.save('./Documents/Dataset.xlsx')
+wb.save(PATHS['documents'] / 'Dataset.xlsx')

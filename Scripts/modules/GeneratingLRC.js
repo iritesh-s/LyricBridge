@@ -1,6 +1,7 @@
 import { parseFile } from "music-metadata";
 import fs from "fs/promises";
 import path from "path";
+import { PATHS } from "../utils/paths.js";
 
 export async function Get_musicDir(folderPath, format = ".mp3") {
   try {
@@ -96,6 +97,7 @@ export async function final_fast(mp3Folder, lrcFolder, batchSize) {
 
   let Dataset = [];
   let Retry = [];
+  let noLRC = [];
 
   for (let i = 0; i < musicDir.length; i += batchSize) {
     const batch = musicDir.slice(i, i + batchSize);
@@ -130,6 +132,7 @@ export async function final_fast(mp3Folder, lrcFolder, batchSize) {
           }
         } else {
           Retry.push(filepath);
+          noLRC.push(filepath);
         }
 
         Dataset[globalIndex] = { ...songData, ...song_lyrics, lrc: lrc };
@@ -145,7 +148,7 @@ export async function final_fast(mp3Folder, lrcFolder, batchSize) {
   //?Creating json for Retry
   try {
     await fs.writeFile(
-      "./Documents/Retry.json",
+      path.join(PATHS.assets, "Retry.json"),
       JSON.stringify(Retry, null, 2),
     );
     console.log("\nThe Retry JSON file is created!\n");
@@ -153,10 +156,21 @@ export async function final_fast(mp3Folder, lrcFolder, batchSize) {
     console.log("Error creating the Retry JSON file: ", error);
     console.log(Retry);
   }
+  //?Creating json for noLRC
+  try {
+    await fs.writeFile(
+      path.join(PATHS.assets, "noLRC.json"),
+      JSON.stringify(noLRC, null, 2),
+    );
+    console.log("\nThe noLRC JSON file is created!\n");
+  } catch (error) {
+    console.log("Error creating the noLRC JSON file: ", error);
+    console.log(noLRC);
+  }
   //?Creating json for the Dataset
   try {
     await fs.writeFile(
-      "./Documents/lyrics_data.json",
+      path.join(PATHS.assets, "lyrics_data.json"),
       JSON.stringify(Dataset, null, 2),
     );
     console.log("\nThe dataset JSON file is created!\n");
@@ -179,9 +193,31 @@ export async function Repeat(JSONpath, lrcFolder, batchSize) {
   //?getting the music directory
   if (musicDir.length === 0) {
     console.log("The directory has no .mp3 files.");
+
+    //Also empty the lyrics_data.json empty
+    try {
+      await fs.writeFile(
+        path.join(PATHS.assets, "lyrics_data.json"),
+        JSON.stringify([], null, 2),
+      );
+      console.log("\nThe dataset JSON file is created!\n");
+    } catch (error) {
+      console.log("Error creating the dataset JSON file: ", error);
+      console.log([]);
+    }
     return;
   }
   //console.log(musicDir);
+
+  //noLRC should have the files that don't have lrc files 
+  let noLRC = [];
+  try {
+    const data = await fs.readFile(path.join(PATHS.assets, "noLRC.json"), "utf8");
+    noLRC = JSON.parse(data);
+    console.log("Successfully loaded noLRC array:", noLRC);
+  } catch (err) {
+    console.error("Failed to read or parse noLRC file:", err.message);
+  }
 
   let Dataset = [];
   let Retry = [];
@@ -219,6 +255,7 @@ export async function Repeat(JSONpath, lrcFolder, batchSize) {
           }
         } else {
           Retry.push(filepath);
+          noLRC.push(filepath);
         }
 
         Dataset[globalIndex] = { ...songData, ...song_lyrics, lrc: lrc };
@@ -234,7 +271,7 @@ export async function Repeat(JSONpath, lrcFolder, batchSize) {
   //?Creating json for Retry
   try {
     await fs.writeFile(
-      "./Documents/Retry.json",
+      path.join(PATHS.assets, "Retry.json"),
       JSON.stringify(Retry, null, 2),
     );
     console.log("\nThe Retry JSON file is created!\n");
@@ -242,10 +279,21 @@ export async function Repeat(JSONpath, lrcFolder, batchSize) {
     console.log("Error creating the Retry JSON file: ", error);
     console.log(Retry);
   }
+  //?Creating json for noLRC
+  try {
+    await fs.writeFile(
+      path.join(PATHS.assets, "noLRC.json"),
+      JSON.stringify(noLRC, null, 2),
+    );
+    console.log("\nThe noLRC JSON file is created!\n");
+  } catch (error) {
+    console.log("Error creating the noLRC JSON file: ", error);
+    console.log(noLRC);
+  }
   //?Creating json for the Dataset
   try {
     await fs.writeFile(
-      "./Documents/lyrics_data.json",
+      path.join(PATHS.assets, "lyrics_data.json"),
       JSON.stringify(Dataset, null, 2),
     );
     console.log("\nThe dataset JSON file is created!\n");

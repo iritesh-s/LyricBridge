@@ -1,6 +1,8 @@
 import { final_fast, Repeat } from "./GeneratingLRC.js";
 import { moveFiles } from "./Remaining.js";
 import { final_embed } from "./Embedding.js";
+import {PATHS} from '../utils/paths.js'
+import path from "path";
 
 import { spawn } from "child_process";
 
@@ -32,15 +34,15 @@ export async function startPipeline(batchSize) {
   try {
     //Storing the LRC files
 
-    await final_fast("../Files/MP3_files", "../Files/LRC_files", batchSize);
+    await final_fast(PATHS.mp3Folder, PATHS.lrcFolder, batchSize);
 
     //stroing the data in Dataset.xlsx
 
-    await runPython("./Module/dataset.py");
+    await runPython(path.join(PATHS.modules , 'dataset.py'));
 
     //beautifying the Dataset.xlsx
 
-    await runPython("./Module/excel_beautify.py");
+    await runPython(path.join(PATHS.modules , 'excel_beautify.py'));
 
     console.log("\n🎯 ENTIRE PIPELINE COMPLETE!");
   } catch (error) {
@@ -52,15 +54,15 @@ export async function repeatPipeline() {
   try {
     //Storing the LRC files
 
-    await Repeat("./Documents/Retry.json", "../Files/LRC_files");
+    await Repeat(path.join(PATHS.assets,'Retry.json'), PATHS.lrcFolder);
 
     //stroing the data in Dataset.xlsx
 
-    await runPython("./Module/dataset2.py");
+    await runPython(path.join(PATHS.modules , 'dataset2.py'));
 
     //beautifying the Dataset.xlsx
 
-    await runPython("./Module/excel_beautify.py");
+    await runPython(path.join(PATHS.modules , 'excel_beautify.py'));
 
     console.log("\n🎯 REPEAT PIPELINE COMPLETE!");
   } catch (error) {
@@ -71,14 +73,16 @@ export async function repeatPipeline() {
 export async function embedPipeline() {
   try {
     //embedding the mp3 files
-    await final_embed("../Files");
+    await final_embed(path.join(PATHS.root , 'Files'));
 
     //storing the non-embedded files in a different folder
-    await moveFiles("./Documents/Retry.json", "../Files/MP3_files");
+    await moveFiles(path.join(PATHS.assets,'noLRC.json'), PATHS.mp3Folder);
 
     //storing the data
-    await runPython("./Module/dataset2.py");
+    await runPython(path.join(PATHS.modules , 'embedded.py'));
+
   } catch (error) {
     console.error("Critical Embed Pipeline Error:", error);
   }
 }
+

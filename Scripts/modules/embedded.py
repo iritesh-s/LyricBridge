@@ -1,12 +1,15 @@
 import pandas as pd; 
+from utils.paths import PATHS
 
-file = pd.read_json('../Documents/embedded_data.json')
-file = file.rename(columns={'embedded' : 'Embed Status'})
-file = file.sort_values(by='Embed Status').reset_index(drop=True)
-#file
-# ?print(file)
+file = pd.read_json(PATHS['assets'] / 'embedded_data.json')
 
-excel_path = '../Documents/Embedded_Dataset.xlsx'
+if file.empty == False:
+    file = file.rename(columns={'embedded' : 'Embed Status'})
+    file = file.sort_values(by='Embed Status').reset_index(drop=True)
+    #file
+    # ?print(file)
+
+excel_path = PATHS['documents'] / 'Embedded_Dataset.xlsx'
 #exporting to excel
 file.to_excel(excel_path, index=False, engine='openpyxl')
 print("Updated the Excel File!")
@@ -16,7 +19,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font
 
 
-wb = load_workbook('./Documents/Embedded_Dataset.xlsx')
+wb = load_workbook(excel_path)
 sheet = wb.active
 
 #? Setting widths of the columns
@@ -50,5 +53,5 @@ for row_num in range(2 , sheet.max_row + 1):
     sheet.row_dimensions[row_num].height = 30
 
 #applying the changes
-wb.save('./Documents/Embedded_Dataset.xlsx')
+wb.save(excel_path)
 print("The styling is also done!")

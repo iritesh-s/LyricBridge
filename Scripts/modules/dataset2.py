@@ -1,6 +1,7 @@
 import pandas as pd;
+from utils.paths import PATHS
 
-file = pd.read_json('./Documents/lyrics_data.json')
+file = pd.read_json(PATHS['assets'] / 'lyrics_data.json')
 if file.empty == False :
     file = file.rename(columns={'status' : 'Status' , 'lyrics' : 'Lyrics' , 'lrc' : 'LRC Status'})
     file['Lyrics'] = file['Lyrics'].str.replace('\n', ' ', regex=False).str.slice(0, 32000)
@@ -9,7 +10,7 @@ if file.empty == False :
     #? print(file)
     
     # Editing the excel dataframe
-    excel_path = './Documents/Dataset.xlsx'
+    excel_path = PATHS['documents'] / 'Dataset.xlsx'
 
     existing_data = pd.read_excel(excel_path)
 
