@@ -1,8 +1,8 @@
 {
   "type": "module",
   "dependencies": {
-    "node-id3": "^0.2.6",
+    "fs-extra": "^11.1.0",
     "music-metadata": "^7.14.0",
-    "fs-extra": "^11.1.0"
+    "node-id3": "^0.2.6"
   }
 }

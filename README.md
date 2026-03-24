@@ -1,11 +1,11 @@
 
-# LYRICBRIDGE 🎵
+# LYRICBRIDGE 
 
 A modular automation pipeline designed to identify MP3 files, fetch synchronized lyrics, and embed them directly into audio metadata.
 
 ## How to Use?
 
-### 🚀 Quick Start
+### Quick Start
 1. Clone the Repository
 
     `git clone https://github.com/your-username/your-repo-name.git`
@@ -25,7 +25,7 @@ A modular automation pipeline designed to identify MP3 files, fetch synchronized
     Place your MP3 files in the following directory:
     Files/MP3_files/
 
-### 🛠 Using the Pipeline
+### Using the Pipeline
 To run the pipeline, open Runner.js and uncomment the functions you wish to execute, then run:
 node Runner.js
 
@@ -50,7 +50,7 @@ Constraint: Run this only once at the very end.
 
 Action: Uncomment embedPipeline(); in Runner.js.
 
-### 📂 Output & Results
+### Output & Results
 Once the pipeline finishes, your files are organized into the following structure:
 
 * LRC Lyrics: All generated .lrc files are stored in Files/LRC_files.
@@ -61,7 +61,7 @@ Once the pipeline finishes, your files are organized into the following structur
 
 * Processed MP3s: Your final, embedded files are located in the Files/ directory.
 
-## 🚀 The Pipeline Logic
+## The Pipeline Logic
 The system is divided into four distinct phases to ensure data integrity and bypass API limitations:
 
 ### 1. Metadata Extraction (Node.js)
@@ -86,13 +86,13 @@ Styling: Uses openpyxl to color-code statuses (e.g., Green for Synced, Yellow fo
 ### 4. ID3 Embedding (Node.js)
 The final step closes the loop. It reads the fetched .lrc files and injects them into the MP3's unsynchronisedLyrics frame using node-id3. This makes the lyrics permanent and viewable on mobile music players (PowerAmp, Samsung Music, etc.).
 
-## 🛠️ Project Structure
-### ⚙️ Technical Highlights
+## Project Structure
+### Technical Highlights
 Batching Logic: Increased processing speed by 500% compared to sequential fetching.
 
 Modular Design: Separated the "Scraper" from the "Tagger" to allow for independent testing and safer file modification.
 
-### 🚀 How It Works
+### How It Works
 Phase 1: Scan & Fetch
 The script extracts Artist, Title, and Duration using music-metadata. It then queries the LRCLIB API to find matching synchronized lyrics.
 
@@ -102,7 +102,7 @@ The Node.js data is passed to a Python script. Python applies conditional format
 Phase 3: Embedding
 The Embedder module reads the verified .lrc files and injects them into the MP3's unsynchronisedLyrics ID3 frame. This makes the lyrics "portable" for any mobile music player.
 
-## 📦 Dependencies
+## Dependencies
 Node.js: music-metadata, node-id3, fs-extra
 
 Python: pandas, openpyxl
